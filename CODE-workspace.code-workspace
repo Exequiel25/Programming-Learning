@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "C"
+		},
+		{
+			"path": "C++"
+		},
+		{
+			"path": "C#"
+		},
+		{
+			"path": "Bash"
+		},
+		{
+			"path": "Python"
+		},
+		{
+			"path": "Web Development"
+		},
+		{
+			"path": "F#"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Web Development"
+	}
+}

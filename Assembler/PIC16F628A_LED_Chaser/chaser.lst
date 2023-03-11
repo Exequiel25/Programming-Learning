@@ -1,0 +1,540 @@
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  1
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00001 LIST P=p16f628
+                      00002 #include <p16f628.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Oct 21 2015
+                      00005 ;  MPASM PIC16F628 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00382         LIST
+                      00003 
+                      00004 ; PIC16F84A Configuration Bit Settings
+                      00005 
+                      00006 ; CONFIG
+Warning[205]: Found directive in column 1: "__CONFIG"
+2007   3F61           00007 __CONFIG _XT_OSC & _WDT_OFF & _PWRTE_ON & _CP_OFF & _CPD_OFF & _MCLRE_ON & _BOREN_ON & _LVP_OFF
+                      00008 
+                      00009 ;------------------------------------------------------------------------------:
+                      00010 ; MACROS
+                      00011 ;------------------------------------------------------------------------------:
+                      00012 bank0 MACRO
+                      00013         bcf     STATUS,5
+                      00014         bcf     STATUS,6
+                      00015     ENDM
+                      00016 bank1 MACRO
+                      00017         bsf     STATUS,5
+                      00018         bcf     STATUS,6
+                      00019     ENDM
+                      00020     
+                      00021 ;------------------------------------------------------------------------------:
+                      00022 ; Variables RAM
+                      00023 ;------------------------------------------------------------------------------:
+                      00024 ;    ENERAL PURPOSE STATIC RAM REGISTERS
+                      00025     ; BANK 0        20-7Fh
+                      00026     ; BANK 1        A0h-FF
+                      00027     ; BANK 2        20h-14Fh, 170h-17F
+                      00028     ; BANK 3        1F0h-1FFh
+                      00029     
+  00000020            00030 DCounter1   EQU     0X20
+  00000021            00031 DCounter2   EQU     0X21
+  00000022            00032 DCounter3   EQU     0X22
+  00000023            00033 SCounter    EQU     0X23
+  00000024            00034 S3Counter   EQU     0X24
+                      00035 ;------------------------------------------------------------------------------:
+0000                  00036         org     0x00
+0000   2810           00037         goto    MAIN
+                      00038   
+                      00039 ;*********************************************************************
+                      00040 ; VECTOR INTERRUP
+                      00041 ;*********************************************************************
+0004                  00042         org     4h
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  2
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0004   282A           00043         goto    interrupt
+                      00044             
+                      00045 ;*********************************************************************
+                      00046 ; MAIN CODE
+                      00047 ;*********************************************************************
+0010                  00048         org     10h
+0010                  00049 MAIN:
+0010   2018           00050         call    INIT
+0011                  00051 restart:
+0011   3001           00052         movlw   0x01
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0012   00A3           00053         movwf   SCounter
+0013   3002           00054         movlw   0x02
+0014   00A4           00055         movwf   S3Counter
+0015                  00056 sequence:
+Message[305]: Using default destination of 1 (file).
+0015   0BA3           00057         decfsz  SCounter
+0016   283D           00058         goto    seq3
+0017   282E           00059         goto    seq1
+                      00060 ;------------------------------------------------------------------------------:
+                      00061 ; Init PIC
+                      00062 ;------------------------------------------------------------------------------:
+0018                  00063 INIT:
+                      00064         bank0
+0018   1283               M         bcf     STATUS,5
+0019   1303               M         bcf     STATUS,6
+                      00065     
+                      00066     ;*******deshabilitar comparadores**********
+001A   3007           00067         movlw   0x7
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+001B   009F           00068         movwf   CMCON           ; Comparators Off CM2:CM0 = 111
+                      00069     
+                      00070     ;*******interrupciones**********
+001C   3090           00071         movlw   b'10010000'
+001D   008B           00072         movwf   INTCON          ; Enable RB0/INT interruption, able global interruptions and clean INTF 
+                            flag
+001E   1381           00073         bcf     OPTION_REG,7    ; Enable pull-up RES
+001F   1301           00074         bcf     OPTION_REG,6    ; Interrupt on falling edge of RB0/INT pin
+                      00075     
+                      00076     ;*******control de puertos**********
+0020   0185           00077         clrf    PORTA           ; Initialize PORTA by clearing output data latches
+0021   0186           00078         clrf    PORTB           ; Initialize PORTB by clearing output data latches
+                      00079     
+                      00080         bank1
+0022   1683               M         bsf     STATUS,5
+0023   1303               M         bcf     STATUS,6
+0024   0185           00081         clrf    TRISA
+0025   3001           00082         movlw   1h              
+0026   0086           00083         movwf   TRISB           ; Set RB<7:1> as outputs ; RB<0> is for interruptions
+                      00084         
+0027                  00085 end_init_Pic:
+                      00086         bank0
+0027   1283               M         bcf     STATUS,5
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  3
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0028   1303               M         bcf     STATUS,6
+0029   0008           00087         RETURN
+                      00088 ;------------------------------------------------------------------------------:
+                      00089 ; Interruption manager
+                      00090 ;------------------------------------------------------------------------------:
+002A                  00091 interrupt:
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+002A   0186           00092         clrf    PORTB
+002B   0063           00093         SLEEP
+002C   108B           00094         bcf     INTCON,1
+002D   0009           00095         RETFIE
+                      00096 ;------------------------------------------------------------------------------:
+                      00097 ; Subrutines
+                      00098 ;------------------------------------------------------------------------------: 
+002E                  00099 seq1:
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+002E   1486           00100         bsf         PORTB,1
+002F   2048           00101         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0030   1586           00102         bsf         PORTB,3
+0031   2048           00103         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0032   1686           00104         bsf         PORTB,5
+0033   2048           00105         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0034   1786           00106         bsf         PORTB,7
+0035   2048           00107         call    DELAY_500ms
+0036                  00108 seq2:
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0036   1506           00109         bsf         PORTB,2
+0037   2048           00110         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0038   1606           00111         bsf         PORTB,4
+0039   2048           00112         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+003A   1706           00113         bsf         PORTB,6
+003B   2048           00114         call    DELAY_500ms
+003C   2815           00115         goto    sequence
+003D                  00116 seq3:
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+003D   0186           00117         clrf    PORTB
+003E   2048           00118         call    DELAY_500ms
+003F   30FF           00119         movlw   0xff
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0040   0086           00120         movwf   PORTB
+0041   2048           00121         call    DELAY_500ms
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+Message[305]: Using default destination of 1 (file).
+0042   0BA4           00122         decfsz  S3Counter
+0043   283D           00123         goto    seq3
+0044   3001           00124         movlw   0x01
+0045   00A3           00125         movwf   SCounter
+0046   0186           00126         clrf    PORTB
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  4
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+0047   2811           00127         goto    restart
+                      00128         
+0048                  00129 DELAY_500ms:
+0048   3054           00130         MOVLW 0X54
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0049   00A0           00131         MOVWF DCounter1
+004A   308A           00132         MOVLW 0X8a
+004B   00A1           00133         MOVWF DCounter2
+004C   3003           00134         MOVLW 0X03
+004D   00A2           00135         MOVWF DCounter3
+004E                  00136 LOOP_500ms:
+004E   0BA0           00137         DECFSZ DCounter1, 1
+004F   284E           00138         GOTO LOOP_500ms
+0050   0BA1           00139         DECFSZ DCounter2, 1
+0051   284E           00140         GOTO LOOP_500ms
+0052   0BA2           00141         DECFSZ DCounter3, 1
+0053   284E           00142         GOTO LOOP_500ms
+0054   0000           00143         NOP
+0055   0008           00144         RETURN
+                      00145         
+                      00146         END
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+ADDEN                             CONSTANT      00000003              3
+ADEN                              CONSTANT      00000003              3
+BRGH                              CONSTANT      00000002              2
+C                                 CONSTANT      00000000              0
+C1INV                             CONSTANT      00000004              4
+C1OUT                             CONSTANT      00000006              6
+C2INV                             CONSTANT      00000005              5
+C2OUT                             CONSTANT      00000007              7
+CCP1CON                           CONSTANT      00000017             23
+CCP1IE                            CONSTANT      00000002              2
+CCP1IF                            CONSTANT      00000002              2
+CCP1M0                            CONSTANT      00000000              0
+CCP1M1                            CONSTANT      00000001              1
+CCP1M2                            CONSTANT      00000002              2
+CCP1M3                            CONSTANT      00000003              3
+CCP1X                             CONSTANT      00000005              5
+CCP1Y                             CONSTANT      00000004              4
+CCPR1                             CONSTANT      00000015             21
+CCPR1H                            CONSTANT      00000016             22
+CCPR1L                            CONSTANT      00000015             21
+CIS                               CONSTANT      00000003              3
+CM0                               CONSTANT      00000000              0
+CM1                               CONSTANT      00000001              1
+CM2                               CONSTANT      00000002              2
+CMCON                             CONSTANT      0000001F             31
+CMIE                              CONSTANT      00000006              6
+CMIF                              CONSTANT      00000006              6
+CREN                              CONSTANT      00000004              4
+CSRC                              CONSTANT      00000007              7
+DATA_CP_OFF                       CONSTANT      00003FFF          16383
+DATA_CP_ON                        CONSTANT      00003EFF          16127
+DC                                CONSTANT      00000001              1
+DCounter1                         CONSTANT      00000020             32
+DCounter2                         CONSTANT      00000021             33
+DCounter3                         CONSTANT      00000022             34
+DELAY_500ms                       ADDRESS       00000048             72
+EEADR                             CONSTANT      0000009B            155
+EECON1                            CONSTANT      0000009C            156
+EECON2                            CONSTANT      0000009D            157
+EEDATA                            CONSTANT      0000009A            154
+EEIE                              CONSTANT      00000007              7
+EEIF                              CONSTANT      00000007              7
+F                                 CONSTANT      00000001              1
+FERR                              CONSTANT      00000002              2
+FSR                               CONSTANT      00000004              4
+GIE                               CONSTANT      00000007              7
+INDF                              CONSTANT      00000000              0
+INIT                              ADDRESS       00000018             24
+INTCON                            CONSTANT      0000000B             11
+INTE                              CONSTANT      00000004              4
+INTEDG                            CONSTANT      00000006              6
+INTF                              CONSTANT      00000001              1
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  6
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+IRP                               CONSTANT      00000007              7
+LOOP_500ms                        ADDRESS       0000004E             78
+MAIN                              ADDRESS       00000010             16
+NOT_BO                            CONSTANT      00000000              0
+NOT_BOD                           CONSTANT      00000000              0
+NOT_BOR                           CONSTANT      00000000              0
+NOT_PD                            CONSTANT      00000003              3
+NOT_POR                           CONSTANT      00000001              1
+NOT_RBPU                          CONSTANT      00000007              7
+NOT_T1SYNC                        CONSTANT      00000002              2
+NOT_TO                            CONSTANT      00000004              4
+OERR                              CONSTANT      00000001              1
+OPTION_REG                        CONSTANT      00000081            129
+OSCF                              CONSTANT      00000003              3
+PCL                               CONSTANT      00000002              2
+PCLATH                            CONSTANT      0000000A             10
+PCON                              CONSTANT      0000008E            142
+PEIE                              CONSTANT      00000006              6
+PIE1                              CONSTANT      0000008C            140
+PIR1                              CONSTANT      0000000C             12
+PORTA                             CONSTANT      00000005              5
+PORTB                             CONSTANT      00000006              6
+PR2                               CONSTANT      00000092            146
+PS0                               CONSTANT      00000000              0
+PS1                               CONSTANT      00000001              1
+PS2                               CONSTANT      00000002              2
+PSA                               CONSTANT      00000003              3
+RA0                               CONSTANT      00000000              0
+RA1                               CONSTANT      00000001              1
+RA2                               CONSTANT      00000002              2
+RA3                               CONSTANT      00000003              3
+RA4                               CONSTANT      00000004              4
+RA5                               CONSTANT      00000005              5
+RA6                               CONSTANT      00000006              6
+RA7                               CONSTANT      00000007              7
+RB0                               CONSTANT      00000000              0
+RB1                               CONSTANT      00000001              1
+RB2                               CONSTANT      00000002              2
+RB3                               CONSTANT      00000003              3
+RB4                               CONSTANT      00000004              4
+RB5                               CONSTANT      00000005              5
+RB6                               CONSTANT      00000006              6
+RB7                               CONSTANT      00000007              7
+RBIE                              CONSTANT      00000003              3
+RBIF                              CONSTANT      00000000              0
+RCIE                              CONSTANT      00000005              5
+RCIF                              CONSTANT      00000005              5
+RCREG                             CONSTANT      0000001A             26
+RCSTA                             CONSTANT      00000018             24
+RD                                CONSTANT      00000000              0
+RP0                               CONSTANT      00000005              5
+RP1                               CONSTANT      00000006              6
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  7
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+RX9                               CONSTANT      00000006              6
+RX9D                              CONSTANT      00000000              0
+S3Counter                         CONSTANT      00000024             36
+SCounter                          CONSTANT      00000023             35
+SPBRG                             CONSTANT      00000099            153
+SPEN                              CONSTANT      00000007              7
+SREN                              CONSTANT      00000005              5
+STATUS                            CONSTANT      00000003              3
+SYNC                              CONSTANT      00000004              4
+T0CS                              CONSTANT      00000005              5
+T0IE                              CONSTANT      00000005              5
+T0IF                              CONSTANT      00000002              2
+T0SE                              CONSTANT      00000004              4
+T1CKPS0                           CONSTANT      00000004              4
+T1CKPS1                           CONSTANT      00000005              5
+T1CON                             CONSTANT      00000010             16
+T1OSCEN                           CONSTANT      00000003              3
+T2CKPS0                           CONSTANT      00000000              0
+T2CKPS1                           CONSTANT      00000001              1
+T2CON                             CONSTANT      00000012             18
+TMR0                              CONSTANT      00000001              1
+TMR0IE                            CONSTANT      00000005              5
+TMR0IF                            CONSTANT      00000002              2
+TMR1                              CONSTANT      0000000E             14
+TMR1CS                            CONSTANT      00000001              1
+TMR1H                             CONSTANT      0000000F             15
+TMR1IE                            CONSTANT      00000000              0
+TMR1IF                            CONSTANT      00000000              0
+TMR1L                             CONSTANT      0000000E             14
+TMR1ON                            CONSTANT      00000000              0
+TMR2                              CONSTANT      00000011             17
+TMR2IE                            CONSTANT      00000001              1
+TMR2IF                            CONSTANT      00000001              1
+TMR2ON                            CONSTANT      00000002              2
+TOUTPS0                           CONSTANT      00000003              3
+TOUTPS1                           CONSTANT      00000004              4
+TOUTPS2                           CONSTANT      00000005              5
+TOUTPS3                           CONSTANT      00000006              6
+TRISA                             CONSTANT      00000085            133
+TRISA0                            CONSTANT      00000000              0
+TRISA1                            CONSTANT      00000001              1
+TRISA2                            CONSTANT      00000002              2
+TRISA3                            CONSTANT      00000003              3
+TRISA4                            CONSTANT      00000004              4
+TRISA5                            CONSTANT      00000005              5
+TRISA6                            CONSTANT      00000006              6
+TRISA7                            CONSTANT      00000007              7
+TRISB                             CONSTANT      00000086            134
+TRISB0                            CONSTANT      00000000              0
+TRISB1                            CONSTANT      00000001              1
+TRISB2                            CONSTANT      00000002              2
+TRISB3                            CONSTANT      00000003              3
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+TRISB4                            CONSTANT      00000004              4
+TRISB5                            CONSTANT      00000005              5
+TRISB6                            CONSTANT      00000006              6
+TRISB7                            CONSTANT      00000007              7
+TRMT                              CONSTANT      00000001              1
+TX9                               CONSTANT      00000006              6
+TX9D                              CONSTANT      00000000              0
+TXEN                              CONSTANT      00000005              5
+TXIE                              CONSTANT      00000004              4
+TXIF                              CONSTANT      00000004              4
+TXREG                             CONSTANT      00000019             25
+TXSTA                             CONSTANT      00000098            152
+VR0                               CONSTANT      00000000              0
+VR1                               CONSTANT      00000001              1
+VR2                               CONSTANT      00000002              2
+VR3                               CONSTANT      00000003              3
+VRCON                             CONSTANT      0000009F            159
+VREN                              CONSTANT      00000007              7
+VROE                              CONSTANT      00000006              6
+VRR                               CONSTANT      00000005              5
+W                                 CONSTANT      00000000              0
+WR                                CONSTANT      00000001              1
+WREN                              CONSTANT      00000002              2
+WRERR                             CONSTANT      00000003              3
+Z                                 CONSTANT      00000002              2
+_BODEN_OFF                        CONSTANT      00003FBF          16319
+_BODEN_ON                         CONSTANT      00003FFF          16383
+_BOREN_OFF                        CONSTANT      00003FBF          16319
+_BOREN_ON                         CONSTANT      00003FFF          16383
+_CONFIG                           CONSTANT      00002007           8199
+_CPD_OFF                          CONSTANT      00003FFF          16383
+_CPD_ON                           CONSTANT      00003EFF          16127
+_CP_50                            CONSTANT      00002BFF          11263
+_CP_75                            CONSTANT      000017FF           6143
+_CP_ALL                           CONSTANT      000003FF           1023
+_CP_OFF                           CONSTANT      00003FFF          16383
+_DEVID1                           CONSTANT      00002006           8198
+_ER_OSC_CLKOUT                    CONSTANT      00003FFF          16383
+_ER_OSC_NOCLKOUT                  CONSTANT      00003FFE          16382
+_EXTCLK_OSC                       CONSTANT      00003FEF          16367
+_FOSC_ECIO                        CONSTANT      00003FEF          16367
+_FOSC_ERCLK                       CONSTANT      00003FFF          16383
+_FOSC_ERIO                        CONSTANT      00003FFE          16382
+_FOSC_HS                          CONSTANT      00003FEE          16366
+_FOSC_INTOSCCLK                   CONSTANT      00003FFD          16381
+_FOSC_INTOSCIO                    CONSTANT      00003FFC          16380
+_FOSC_LP                          CONSTANT      00003FEC          16364
+_FOSC_XT                          CONSTANT      00003FED          16365
+_HS_OSC                           CONSTANT      00003FEE          16366
+_IDLOC0                           CONSTANT      00002000           8192
+_IDLOC1                           CONSTANT      00002001           8193
+_IDLOC2                           CONSTANT      00002002           8194
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+_IDLOC3                           CONSTANT      00002003           8195
+_INTRC_OSC_CLKOUT                 CONSTANT      00003FFD          16381
+_INTRC_OSC_NOCLKOUT               CONSTANT      00003FFC          16380
+_LP_OSC                           CONSTANT      00003FEC          16364
+_LVP_OFF                          CONSTANT      00003F7F          16255
+_LVP_ON                           CONSTANT      00003FFF          16383
+_MCLRE_OFF                        CONSTANT      00003FDF          16351
+_MCLRE_ON                         CONSTANT      00003FFF          16383
+_PWRTE_OFF                        CONSTANT      00003FFF          16383
+_PWRTE_ON                         CONSTANT      00003FF7          16375
+_WDTE_OFF                         CONSTANT      00003FFB          16379
+_WDTE_ON                          CONSTANT      00003FFF          16383
+_WDT_OFF                          CONSTANT      00003FFB          16379
+_WDT_ON                           CONSTANT      00003FFF          16383
+_XT_OSC                           CONSTANT      00003FED          16365
+__14_BIT                          CONSTANT      00000001              1
+__16F628                          CONSTANT      00000001              1
+__ACTIVE_BANK_ADDR                VARIABLE      FFFFFFFF             -1
+__ACTIVE_PAGE_ADDR                VARIABLE      FFFFFFFF             -1
+__ASSUMED_BANK_ADDR               VARIABLE      FFFFFFFF             -1
+__BANK_0                          CONSTANT      00000000              0
+__BANK_1                          CONSTANT      00000080            128
+__BANK_2                          CONSTANT      00000100            256
+__BANK_3                          CONSTANT      00000180            384
+__BANK_BITS                       CONSTANT      00000180            384
+__BANK_FIRST                      CONSTANT      00000000              0
+__BANK_INV                        CONSTANT      FFFFFFFF             -1
+__BANK_LAST                       CONSTANT      00000180            384
+__BANK_MASK                       CONSTANT      0000007F            127
+__BANK_SHIFT                      CONSTANT      00000007              7
+__BANK_SIZE                       CONSTANT      00000080            128
+__CODE_END                        CONSTANT      000007FF           2047
+__CODE_START                      CONSTANT      00000000              0
+__COMMON_RAM_END                  CONSTANT      0000007F            127
+__COMMON_RAM_START                CONSTANT      00000070            112
+__CONFIG_END                      CONSTANT      00002007           8199
+__CONFIG_START                    CONSTANT      00002007           8199
+__EEPROM_END                      CONSTANT      0000217F           8575
+__EEPROM_START                    CONSTANT      00002100           8448
+__GPUTILS_SVN_VERSION             CONSTANT      0000052D           1325
+__GPUTILS_VERSION_MAJOR           CONSTANT      00000001              1
+__GPUTILS_VERSION_MICRO           CONSTANT      00000002              2
+__GPUTILS_VERSION_MINOR           CONSTANT      00000005              5
+__IDLOCS_END                      CONSTANT      00002003           8195
+__IDLOCS_START                    CONSTANT      00002000           8192
+__NUM_BANKS                       CONSTANT      00000004              4
+__NUM_PAGES                       CONSTANT      00000001              1
+__PAGE_0                          CONSTANT      00000000              0
+__PAGE_BITS                       CONSTANT      00001800           6144
+__PAGE_FIRST                      CONSTANT      00000000              0
+__PAGE_INV                        CONSTANT      FFFFFFFF             -1
+__PAGE_LAST                       CONSTANT      00000000              0
+gpasm-1.5.2 #1325 (Feb 11 2022)    chaser.asm   06/18/22  20:33:23          PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+__PAGE_MASK                       CONSTANT      000007FF           2047
+__PAGE_SHIFT                      CONSTANT      0000000B             11
+__PAGE_SIZE                       CONSTANT      00000800           2048
+__VECTOR_INT                      CONSTANT      00000004              4
+__VECTOR_RESET                    CONSTANT      00000000              0
+__WHILE_LOOP_COUNT_MAX            CONSTANT      000000FF            255
+bank0                             MACRO     
+bank1                             MACRO     
+end_init_Pic                      ADDRESS       00000027             39
+interrupt                         ADDRESS       0000002A             42
+restart                           ADDRESS       00000011             17
+seq1                              ADDRESS       0000002E             46
+seq2                              ADDRESS       00000036             54
+seq3                              ADDRESS       0000003D             61
+sequence                          ADDRESS       00000015             21
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---X----------- XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXX---------- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    72
+Program Memory Words Free:  1976
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :    16 reported,     0 suppressed
+
+

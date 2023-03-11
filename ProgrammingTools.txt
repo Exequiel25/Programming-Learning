@@ -1,0 +1,39 @@
+Serial Plotting
+serialplot-hg
+
+Assembler/Assembly Language PICs
+gputils gpsim
+
+ARM (todavía no usado)
+arm-none-eabi-gcc arm-none-eabi-gdb arm-none-eabi-binutils arm-none-eabi-newlib libopencm3
+
+STM32 (Blue Pill)
+PlatformIO (framework = stm31cube) + STM32CubeMX + STM32CubeProgrammer + stm32pio
+
+C/C++/Makefile
+gcc g++ make
+mingw-w64-gcc (windows cross-compiling)
+
+Qt
+qt5-tools
+
+C#/F#
+dotnet
+
+Bash
+-
+
+Web Development
+HTML;CSS;JS
+PHP
+NodeJS, npm
+nginx (servers)
+
+Python
+python, python3, conda
+
+Arduino
+C/C++, PlatformIO (framework = arduino)
+
+AVR
+avr-gcc

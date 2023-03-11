@@ -1,0 +1,15 @@
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.csproj.AssemblyReference.cache
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.GeneratedMSBuildEditorConfig.editorconfig
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.AssemblyInfoInputs.cache
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.AssemblyInfo.cs
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.csproj.CoreCompileInputs.cache
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/SayingHello
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/SayingHello.deps.json
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/SayingHello.runtimeconfig.json
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/SayingHello.dll
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/ref/SayingHello.dll
+/home/exequiel/Documents/Code/C#/SayingHello/bin/Debug/net6.0/SayingHello.pdb
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.dll
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/ref/SayingHello.dll
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.pdb
+/home/exequiel/Documents/Code/C#/SayingHello/obj/Debug/net6.0/SayingHello.genruntimeconfig.cache

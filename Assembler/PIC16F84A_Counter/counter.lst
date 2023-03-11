@@ -1,0 +1,304 @@
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  1
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+                      00001 LIST P=p16f84
+                      00002 #include <p16f84.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Oct 21 2015
+                      00005 ;  MPASM PIC16F84 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2015 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00207         LIST
+                      00003 
+                      00004 ; PIC16F84A Configuration Bit Settings
+                      00005 
+                      00006 ; CONFIG
+Warning[205]: Found directive in column 1: "__CONFIG"
+2007   3FF2           00007 __CONFIG _HS_OSC & _WDT_OFF & _PWRTE_ON &_CP_OFF
+                      00008                                 ; Oscillator Selection bits (HS
+                      00009                                 ; oscillator) Watchdog Timer (WDT
+                      00010                                 ; disabled) Power-up Timer Enable bit
+                      00011                                 ; (Power-up Timer is enabled) Code
+                      00012                                 ; Protection bit (Code protection
+                      00013                                 ; disabled)
+                      00014 
+                      00015 ; Variables
+  0000000C            00016 DCounter1   EQU     0X0C
+  0000000D            00017 DCounter2   EQU     0X0D
+  0000000E            00018 DCounter3   EQU     0X0E
+  0000000F            00019 Counter     EQU     0x0F
+                      00020 ;------------------------------------------------------------------------------:
+                      00021 ; Code
+0000                  00022         org     0x00
+0000                  00023 MAIN:
+0000   1303           00024         bcf     STATUS,6
+0001   1683           00025         bsf     STATUS,5
+0002   0186           00026         clrf    PORTB
+0003   30FF           00027         movlw   0xFF
+0004   0085           00028         movwf   PORTA
+0005   1303           00029         bcf     STATUS,6
+0006   1283           00030         bcf     STATUS,5
+0007                  00031 FIRST_Counter:
+0007   300F           00032         movlw   0x0F
+0008   008F           00033         movwf   Counter
+0009                  00034 LOOP:
+0009   0186           00035         clrf    PORTB
+000A   1E05           00036         btfss   PORTA,4
+000B   2809           00037         goto    LOOP
+000C   200E           00038         call    DISPLAY
+000D   2809           00039         goto    LOOP
+                      00040 ;------------------------------------------------------------------------------:
+                      00041 ; Subrutine
+000E                  00042 DISPLAY:
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  2
+
+
+LOC    OBJECT CODE    LINE  SOURCE TEXT
+  VALUE
+
+000E   080F           00043         movf    Counter,W
+000F   2023           00044         call    SEVEN_SEG
+Message[1302]: RAM Bank undefined in this chunk of code. Ensure that bank bits are correct. Assuming bank 0 from now on.
+0010   0086           00045         movwf   PORTB
+0011   2015           00046         call    DELAY
+0012   0B8F           00047         decfsz  Counter,F
+0013   280E           00048         goto    DISPLAY
+0014   2807           00049         goto    FIRST_Counter
+0015                  00050 DELAY:
+0015   30AC           00051         movlw   0Xac
+0016   008C           00052         movwf   DCounter1
+0017   3013           00053         movlw   0X13
+0018   008D           00054         movwf   DCounter2           
+0019   3006           00055         movlw   0X06
+001A   008E           00056         movwf   DCounter3
+001B                  00057 DECREMENT:
+001B   0B8C           00058         decfsz  DCounter1, 1
+001C   281B           00059         goto    DECREMENT
+001D   0B8D           00060         decfsz  DCounter2, 1
+001E   281B           00061         goto    DECREMENT
+001F   0B8E           00062         decfsz  DCounter3, 1
+0020   281B           00063         goto    DECREMENT
+0021   0000           00064         NOP
+                      00065 
+0022   0008           00066         RETURN
+                      00067     
+0023                  00068 SEVEN_SEG:
+0023   0782           00069         addwf   PCL,F
+0024   343F           00070         retlw   0x3F        ;0
+0025   3406           00071         retlw   0x06        ;1
+0026   345B           00072         retlw   0x5B        ;2
+0027   344F           00073         retlw   0x4F        ;3
+0028   3466           00074         retlw   0x66        ;4
+0029   346D           00075         retlw   0x6D        ;5
+002A   347D           00076         retlw   0x7D        ;6
+002B   3407           00077         retlw   0x07        ;7
+002C   347F           00078         retlw   0x7F        ;8
+002D   346F           00079         retlw   0x6F        ;9
+002E   3477           00080         retlw   0x77        ;A
+002F   347C           00081         retlw   0x7C        ;b
+0030   3439           00082         retlw   0x39        ;C
+0031   345E           00083         retlw   0x5E        ;d
+0032   3479           00084         retlw   0x79        ;E
+0033   3471           00085         retlw   0x71        ;F
+0034   0008           00086         RETURN
+                      00087 
+                      00088         END
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+C                                 CONSTANT      00000000              0
+Counter                           CONSTANT      0000000F             15
+DC                                CONSTANT      00000001              1
+DCounter1                         CONSTANT      0000000C             12
+DCounter2                         CONSTANT      0000000D             13
+DCounter3                         CONSTANT      0000000E             14
+DECREMENT                         ADDRESS       0000001B             27
+DELAY                             ADDRESS       00000015             21
+DISPLAY                           ADDRESS       0000000E             14
+EEADR                             CONSTANT      00000009              9
+EECON1                            CONSTANT      00000088            136
+EECON2                            CONSTANT      00000089            137
+EEDATA                            CONSTANT      00000008              8
+EEIE                              CONSTANT      00000006              6
+EEIF                              CONSTANT      00000004              4
+F                                 CONSTANT      00000001              1
+FIRST_Counter                     ADDRESS       00000007              7
+FSR                               CONSTANT      00000004              4
+GIE                               CONSTANT      00000007              7
+INDF                              CONSTANT      00000000              0
+INTCON                            CONSTANT      0000000B             11
+INTE                              CONSTANT      00000004              4
+INTEDG                            CONSTANT      00000006              6
+INTF                              CONSTANT      00000001              1
+IRP                               CONSTANT      00000007              7
+LOOP                              ADDRESS       00000009              9
+MAIN                              ADDRESS       00000000              0
+NOT_PD                            CONSTANT      00000003              3
+NOT_RBPU                          CONSTANT      00000007              7
+NOT_TO                            CONSTANT      00000004              4
+OPTION_REG                        CONSTANT      00000081            129
+PCL                               CONSTANT      00000002              2
+PCLATH                            CONSTANT      0000000A             10
+PORTA                             CONSTANT      00000005              5
+PORTB                             CONSTANT      00000006              6
+PS0                               CONSTANT      00000000              0
+PS1                               CONSTANT      00000001              1
+PS2                               CONSTANT      00000002              2
+PSA                               CONSTANT      00000003              3
+RA0                               CONSTANT      00000000              0
+RA1                               CONSTANT      00000001              1
+RA2                               CONSTANT      00000002              2
+RA3                               CONSTANT      00000003              3
+RA4                               CONSTANT      00000004              4
+RB0                               CONSTANT      00000000              0
+RB1                               CONSTANT      00000001              1
+RB2                               CONSTANT      00000002              2
+RB3                               CONSTANT      00000003              3
+RB4                               CONSTANT      00000004              4
+RB5                               CONSTANT      00000005              5
+RB6                               CONSTANT      00000006              6
+RB7                               CONSTANT      00000007              7
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+RBIE                              CONSTANT      00000003              3
+RBIF                              CONSTANT      00000000              0
+RD                                CONSTANT      00000000              0
+RP0                               CONSTANT      00000005              5
+RP1                               CONSTANT      00000006              6
+SEVEN_SEG                         ADDRESS       00000023             35
+STATUS                            CONSTANT      00000003              3
+T0CS                              CONSTANT      00000005              5
+T0IE                              CONSTANT      00000005              5
+T0IF                              CONSTANT      00000002              2
+T0SE                              CONSTANT      00000004              4
+TMR0                              CONSTANT      00000001              1
+TMR0IE                            CONSTANT      00000005              5
+TMR0IF                            CONSTANT      00000002              2
+TRISA                             CONSTANT      00000085            133
+TRISA0                            CONSTANT      00000000              0
+TRISA1                            CONSTANT      00000001              1
+TRISA2                            CONSTANT      00000002              2
+TRISA3                            CONSTANT      00000003              3
+TRISA4                            CONSTANT      00000004              4
+TRISB                             CONSTANT      00000086            134
+TRISB0                            CONSTANT      00000000              0
+TRISB1                            CONSTANT      00000001              1
+TRISB2                            CONSTANT      00000002              2
+TRISB3                            CONSTANT      00000003              3
+TRISB4                            CONSTANT      00000004              4
+TRISB5                            CONSTANT      00000005              5
+TRISB6                            CONSTANT      00000006              6
+TRISB7                            CONSTANT      00000007              7
+W                                 CONSTANT      00000000              0
+WR                                CONSTANT      00000001              1
+WREN                              CONSTANT      00000002              2
+WRERR                             CONSTANT      00000003              3
+Z                                 CONSTANT      00000002              2
+_CONFIG                           CONSTANT      00002007           8199
+_CP_OFF                           CONSTANT      00003FFF          16383
+_CP_ON                            CONSTANT      0000000F             15
+_FOSC_EXTRC                       CONSTANT      00003FFF          16383
+_FOSC_HS                          CONSTANT      00003FFE          16382
+_FOSC_LP                          CONSTANT      00003FFC          16380
+_FOSC_XT                          CONSTANT      00003FFD          16381
+_HS_OSC                           CONSTANT      00003FFE          16382
+_IDLOC0                           CONSTANT      00002000           8192
+_IDLOC1                           CONSTANT      00002001           8193
+_IDLOC2                           CONSTANT      00002002           8194
+_IDLOC3                           CONSTANT      00002003           8195
+_LP_OSC                           CONSTANT      00003FFC          16380
+_PWRTE_OFF                        CONSTANT      00003FFF          16383
+_PWRTE_ON                         CONSTANT      00003FF7          16375
+_RC_OSC                           CONSTANT      00003FFF          16383
+_WDTE_OFF                         CONSTANT      00003FFB          16379
+_WDTE_ON                          CONSTANT      00003FFF          16383
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                              TYPE        VALUE         VALUE          VALUE
+                                                 (hex)         (dec)          (text)
+
+_WDT_OFF                          CONSTANT      00003FFB          16379
+_WDT_ON                           CONSTANT      00003FFF          16383
+_XT_OSC                           CONSTANT      00003FFD          16381
+__14_BIT                          CONSTANT      00000001              1
+__16F84                           CONSTANT      00000001              1
+__ACTIVE_BANK_ADDR                VARIABLE      FFFFFFFF             -1
+__ACTIVE_PAGE_ADDR                VARIABLE      FFFFFFFF             -1
+__ASSUMED_BANK_ADDR               VARIABLE      FFFFFFFF             -1
+__BANK_0                          CONSTANT      00000000              0
+__BANK_1                          CONSTANT      00000080            128
+__BANK_BITS                       CONSTANT      00000080            128
+__BANK_FIRST                      CONSTANT      00000000              0
+__BANK_INV                        CONSTANT      FFFFFFFF             -1
+__BANK_LAST                       CONSTANT      00000080            128
+__BANK_MASK                       CONSTANT      0000007F            127
+__BANK_SHIFT                      CONSTANT      00000007              7
+__BANK_SIZE                       CONSTANT      00000080            128
+__CODE_END                        CONSTANT      000003FF           1023
+__CODE_START                      CONSTANT      00000000              0
+__COMMON_RAM_END                  CONSTANT      0000004F             79
+__COMMON_RAM_START                CONSTANT      0000000C             12
+__CONFIG_END                      CONSTANT      00002007           8199
+__CONFIG_START                    CONSTANT      00002007           8199
+__EEPROM_END                      CONSTANT      0000213F           8511
+__EEPROM_START                    CONSTANT      00002100           8448
+__GPUTILS_SVN_VERSION             CONSTANT      0000052D           1325
+__GPUTILS_VERSION_MAJOR           CONSTANT      00000001              1
+__GPUTILS_VERSION_MICRO           CONSTANT      00000002              2
+__GPUTILS_VERSION_MINOR           CONSTANT      00000005              5
+__IDLOCS_END                      CONSTANT      00002003           8195
+__IDLOCS_START                    CONSTANT      00002000           8192
+__NUM_BANKS                       CONSTANT      00000002              2
+__NUM_PAGES                       CONSTANT      00000001              1
+__PAGE_0                          CONSTANT      00000000              0
+__PAGE_BITS                       CONSTANT      00001800           6144
+__PAGE_FIRST                      CONSTANT      00000000              0
+__PAGE_INV                        CONSTANT      FFFFFFFF             -1
+__PAGE_LAST                       CONSTANT      00000000              0
+__PAGE_MASK                       CONSTANT      000007FF           2047
+__PAGE_SHIFT                      CONSTANT      0000000B             11
+__PAGE_SIZE                       CONSTANT      00000800           2048
+__VECTOR_INT                      CONSTANT      00000004              4
+__VECTOR_RESET                    CONSTANT      00000000              0
+__WHILE_LOOP_COUNT_MAX            CONSTANT      000000FF            255
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXX-----------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+gpasm-1.5.2 #1325 (Feb 11 2022)   counter.asm   06/18/22  19:48:44          PAGE  6
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+Program Memory Words Used:    53
+Program Memory Words Free:   971
+
+
+Errors   :     0
+Warnings :     1 reported,     0 suppressed
+Messages :     1 reported,     0 suppressed
+
+

@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: lightblue;
+    color: black;
+}
+
+header h1{
+    text-align: left;
+}
+
+h1 {
+    font-size: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bolder;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 14px;
+    font-family: sans-serif;
+    font-size: bold;
+}
+
+header, section, footer, nav, aside, article {
+    display: block;
+}
+
+body {
+    text-align: center;
+    background: lightskyblue;
+}
+
+time {
+    color: gray;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+article {
+    background: lightblue;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+article footer {
+    text-align: right;
+}
+
+.agrupar {
+    background: lightgray;
+    width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+    padding: 15px;
+}
+
+.seccion {
+    margin: 20px;
+    width: 66%;
+    float: left;
+}
+
+.columna {
+    margin-top: 28px;
+    margin-left: auto;
+    margin-right: 18px;
+    width: 26%;
+    float: right;
+}
+
+.columna blockquote {
+    padding: 40px;
+    margin-bottom: 20px;
+}
+
+.pie {
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: gray;
+    padding: 15px;
+    clear: both;
+}
+
+.comentario {
+    margin-top: 20px;
+}
+
+#menu {
+    background: cadetblue;
+    color: black;
+    padding: 5px 15px;
+    text-align: left;
+    clear: both;
+}
+
+#menu li{
+    list-style: none;
+    padding: 5px 10px;
+    font-size: 20px;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bolder;
+    display: inline-block;
+}
+
+[cite] {
+    background: rgb(53, 120, 175);
+}

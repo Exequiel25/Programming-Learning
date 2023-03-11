@@ -1,0 +1,6 @@
+Personal Assistant Project with Python
+1. Scope of the project:
+	- Open applications and running programs like browser, VSCode, Telegram, Redshift, etc.
+	- Turn on/off volume
+	- Turn up/down volume or brightness level
+	- Search in Internet the answer to a question

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Rp06K4A80ZaQH8nSxni8WqsaMVN1Cn3Dmjys9s5zIBdw6FWwMyFe25shVDNEKHBKzk9GLVFA4vwErzNgolXlwA==",
+  "success": true,
+  "projectFilePath": "/home/exequiel/Documents/Code/C#/SayingHello/SayingHello.csproj",
+  "expectedPackageFiles": [
+    "/home/exequiel/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.6/microsoft.aspnetcore.app.ref.6.0.6.nupkg.sha512"
+  ],
+  "logs": []
+}
