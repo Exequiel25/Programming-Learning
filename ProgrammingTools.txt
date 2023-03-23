@@ -14,6 +14,9 @@ C/C++/Makefile
 gcc g++ make
 mingw-w64-gcc (windows cross-compiling)
 
+System calls
+strace
+
 Qt
 qt5-tools
 
